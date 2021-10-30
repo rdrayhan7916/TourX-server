@@ -17,6 +17,12 @@ async function run() {
         const database = client.db('services');
         const packageCollection = database.collection('package');
 
+        app.post('/addservice', async (req, res) => {
+            console.log(req.body);
+            const result = await packageCollection.insertOne(req.body);
+            res.send(result);
+        })
+
         // Get Method
         app.get('/service', async (req, res) => {
             const cursor = packageCollection.find({});
