@@ -1,5 +1,6 @@
 const express = require("express");
 const { MongoClient } = require('mongodb');
+const ObjectId = require('mongodb').ObjectId;
 const cors = require('cors')
 const app = express();
 const port = process.env.PORT || 5000;
@@ -16,12 +17,20 @@ async function run() {
         await client.connect();
         const database = client.db('services');
         const packageCollection = database.collection('package');
+        const orderCollection = database.collection('myorders')
 
         app.post('/addservice', async (req, res) => {
             console.log(req.body);
             const result = await packageCollection.insertOne(req.body);
             res.send(result);
         })
+        app.post('/booking', async (req, res) => {
+            console.log(req.body);
+            const result = await orderCollection.insertOne(req.body);
+            res.send(result);
+        })
+
+
 
         // Get Method
         app.get('/service', async (req, res) => {
@@ -29,6 +38,14 @@ async function run() {
             const packages = await cursor.toArray();
             res.send(packages)
         })
+
+        app.delete("/service/:id", async (req, res) => {
+            console.log(req.params.id);
+            const result = await packageCollection.deleteOne({
+                _id: ObjectId(req.params.id),
+            });
+            res.send(result);
+        });
 
     }
     finally {
